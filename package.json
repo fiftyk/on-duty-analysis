@@ -1,0 +1,9 @@
+{
+  "name": "analysis",
+  "version": "1.0.0",
+  "description": "统计时段上线人数",
+  "main": "index.js",
+  "repository": "https://github.com/fiftyk/on-duty-analysis",
+  "author": "LiuRongtao",
+  "license": "MIT"
+}
