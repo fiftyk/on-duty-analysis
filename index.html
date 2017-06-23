@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<body onload="init()">
+  <textarea name="csv" id="source" cols="30" rows="10">
+  </textarea>
+  <br>
+  <select id="period">
+    <option value="0">上午</option>
+    <option value="1">下午</option>
+  </select>
+  <select id="day">
+    <option value="1">周一</option>
+    <option value="2">周二</option>
+    <option value="3">周三</option>
+    <option value="4">周四</option>
+    <option value="5">周五</option>
+    <option value="6">周六</option>
+    <option value="7">周日</option>
+  </select>
+  <input type="button" onclick="execute();" value="计算"></input>
+  <p id="output"></p>
+  <script src="src/app.js"></script>
+</body>
