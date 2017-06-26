@@ -2,7 +2,16 @@
 <meta charset="utf-8">
 
 <body onload="init()">
-  <textarea name="csv" id="source" cols="30" rows="10">
+  <fieldset>
+    <legend> 使用说明</legend>
+    <ul>
+      <li>excel 菜单>文件>导出>csv格式；</li>
+      <li>用记事本打开导出的 csv 文件，copy/paste 到下面的输入框中；</li>
+      <li>每行用英文逗号分隔，第 1 列为员工姓名，第 2 列开始为某日期的该员工的上班时间；</li>
+    </ul>
+  </fieldset>
+  <br>
+  <textarea name="csv" id="source" cols="30" rows="10" style="width: 100%;">
   </textarea>
   <br>
   <select id="period">
@@ -10,15 +19,104 @@
     <option value="1">下午</option>
   </select>
   <select id="day">
-    <option value="1">周一</option>
-    <option value="2">周二</option>
-    <option value="3">周三</option>
-    <option value="4">周四</option>
-    <option value="5">周五</option>
-    <option value="6">周六</option>
-    <option value="7">周日</option>
+    <option value="1">第 1 天</option>
+    <option value="2">第 2 天</option>
+    <option value="3">第 3 天</option>
+    <option value="4">第 4 天</option>
+    <option value="5">第 5 天</option>
+    <option value="6">第 6 天</option>
+    <option value="7">第 7 天</option>
   </select>
   <input type="button" onclick="execute();" value="计算"></input>
   <p id="output"></p>
-  <script src="src/app.js"></script>
+  <script>
+    function Period(start, end) {
+      this.start = start;
+      this.end = end;
+      this.contain = function(period) {
+        if (this.start <= period.start && this.end >= period.end) {
+          return true;
+        }
+        return false;
+      };
+    }
+
+    function Staff(name) {
+      this.name = name;
+      this.toString = function() {
+        return this.name;
+      };
+    }
+
+    function Duty(staff, day, period) {
+      this.staff = staff;
+      this.day = day;
+      this.period = period;
+    }
+
+    function encode() {
+      var dataset = [];
+      var records = document.getElementById('source').value.split(/\s/);
+      for (var i = 0, size = records.length; i < size; i++) {
+        var record = records[i];
+        var values = record.split(/,/);
+        var staff = new Staff(values[0]);
+        var jsize = values.length
+        for (var j = 1, jsize; j < jsize; j++) {
+          var array = values[j].split(/-/);
+          if (array.length < 2) {
+            continue;
+          }
+          var start = array[0];
+          var end = array[1];
+          var period = new Period(start, end);
+          var duty = new Duty(staff, j, period);
+          dataset.push(duty);
+        }
+      }
+      return dataset;
+    }
+
+    function anaylsis(dataset, day, period) {
+      var staffs = [];
+      for (var i = 0, size = dataset.length; i < size; i++) {
+        var duty = dataset[i];
+        if (day && day !== duty.day) {
+          continue;
+        }
+        var dutyPeriod = duty.period;
+        if (period.contain(dutyPeriod)) {
+          staffs.push(duty.staff.name);
+        }
+      }
+      return staffs;
+    }
+
+    function print(value) {
+      document.getElementById('output').innerText = '';
+      document.getElementById('output').innerText = '共' + value.length + '人，分别是：' + value;
+    };
+
+    function init() {
+      document.getElementById('source').value = '张某人,08:00-10:00,13:00-18:00,\r\n王某人,13:00-18:00,08:00-10:00,13:00-18:00,';
+    }
+
+    function execute() {
+      // day
+      var dayValue = document.getElementById('day').value;
+      var day = parseInt(dayValue);
+      // period
+      var periodValue = document.getElementById('period').value;
+      var period;
+      if (periodValue === '0') {
+        period = new Period('08:00', '13:00');
+      } else {
+        period = new Period('13:00', '18:00');
+      }
+
+      var dataset = encode();
+      var staffs = anaylsis(dataset, day, period);
+      print(staffs)
+    }
+  </script>
 </body>
